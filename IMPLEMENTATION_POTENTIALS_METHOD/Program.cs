@@ -20,4 +20,14 @@ double[][] plan = medotMinEl.OutputPlan(ArrayA, ArrayB, Matrix);
 ouptput.Output(ArrayA, ArrayB, plan);
 Console.WriteLine($"\nЦелевая функция равна = {ouptput.outputFun(plan, Matrix)}");
 
-plan = potentialsMethod.PotentialsCalculate(Matrix, plan);
+ 
+bool optimal = false;
+while (!optimal)
+{
+    double[][] PotentialPlan = potentialsMethod.PotentialsCalculate(Matrix, plan);
+    optimal = potentialsMethod.OptimalityCalculate(PotentialPlan, Matrix, plan);
+    if(optimal) break;
+    Console.WriteLine("");
+}
+
+ouptput.Output(ArrayA, ArrayB, plan);
