@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IMPLEMENTATION_POTENTIALS_METHOD
 {
-    internal class constructionStoryPlan
+    internal class constructionBFS
     {
         public class Inputs()
         {
