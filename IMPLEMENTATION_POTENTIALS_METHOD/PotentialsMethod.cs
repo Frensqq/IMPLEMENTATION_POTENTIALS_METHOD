@@ -15,7 +15,6 @@ namespace IMPLEMENTATION_POTENTIALS_METHOD
             int horizontal = plan[0].Length;
             int vertical = plan.Length;
 
-
             double[][] planPotential = new double[vertical + 1][];
             for (int i = 0; i < plan.Length; i++)
             {
@@ -24,9 +23,7 @@ namespace IMPLEMENTATION_POTENTIALS_METHOD
             }
             planPotential[planPotential.Length - 1] = new double[plan[0].Length + 1];
 
-
             planPotential[0][horizontal] = 0;
-
 
             while (true)
             {
@@ -71,7 +68,7 @@ namespace IMPLEMENTATION_POTENTIALS_METHOD
             {
                 for (int j = 0; j < planPotential[i].Length; j++)
                 {
-                    Console.Write(planPotential[i][j] + " | ");
+                    Console.Write($"{planPotential[i][j],3} | ");
                 }
                 Console.WriteLine("");
             }
@@ -85,24 +82,28 @@ namespace IMPLEMENTATION_POTENTIALS_METHOD
             int maxI = int.MinValue;
             int maxJ = int.MinValue;
 
-            for (int i = 0; i < planDef.Length-1; i++)
+            for (int i = 0; i < planDef.Length - 1; i++)
             {
-                for (int j = 0; j < planDef[i].Length-1; j++)
+                for (int j = 0; j < planDef[i].Length - 1; j++)
                 {
                     if (planDef[i][j] == 0)
                     {
-                       double optimal = planDef[i][planDef[i].Length - 1] + planDef[planDef.Length - 1][j] - matrix[i][j];
-                       if (optimal > 0)
-                       {
-                            Console.WriteLine($"Δ{i+1}{j+1} > 0");
-                            if(max < optimal)
+                        double optimal = planDef[i][planDef[i].Length - 1] + planDef[planDef.Length - 1][j] - matrix[i][j];
+                        if (optimal > 0)
+                        {
+                            Console.WriteLine($"\nДельта{i + 1}{j + 1} = {optimal} > 0\n");
+                            if (max < optimal)
                             {
                                 max = optimal;
                                 maxI = i;
                                 maxJ = j;
                             }
-                            
-                       }
+
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Дельта{i + 1}{j + 1} = {optimal} <= 0");
+                        }
                     }
                 }
             }
@@ -111,18 +112,12 @@ namespace IMPLEMENTATION_POTENTIALS_METHOD
                 Redistribution(planDef, matrix, plan, max, maxI, maxJ);
                 return false;
             }
-            Console.WriteLine($"Оптимально");
             return true;
         }
 
         public void Redistribution(double[][] planDef, double[][] matrix, double[][] plan, double optimal, int idef, int jdef)
         {
-
-
-            int vertical = plan.Length;
-            int horizontal = plan[0].Length;
-
-            List<(int i, int j)> cycle = FindCycle(plan, idef, jdef);
+            List<(int i, int j)> cycle = FindRectangleCycle(plan, idef, jdef);
 
             if (cycle.Count == 0)
             {
@@ -130,9 +125,8 @@ namespace IMPLEMENTATION_POTENTIALS_METHOD
                 return;
             }
 
-        
             double minLoad = double.MaxValue;
-            for (int k = 1; k < cycle.Count; k += 2) 
+            for (int k = 1; k < cycle.Count - 1; k += 2)
             {
                 int i = cycle[k].i;
                 int j = cycle[k].j;
@@ -142,16 +136,16 @@ namespace IMPLEMENTATION_POTENTIALS_METHOD
                 }
             }
 
-            for (int k = 0; k < cycle.Count; k++)
+            for (int k = 0; k < cycle.Count - 1; k++)
             {
                 int i = cycle[k].i;
                 int j = cycle[k].j;
 
-                if (k % 2 == 0) 
+                if (k % 2 == 0)
                 {
                     plan[i][j] += minLoad;
                 }
-                else 
+                else
                 {
                     plan[i][j] -= minLoad;
                 }
@@ -161,115 +155,34 @@ namespace IMPLEMENTATION_POTENTIALS_METHOD
             Console.WriteLine($"Минимальный груз для перераспределения: {minLoad}");
         }
 
-        private List<(int i, int j)> FindCycle(double[][] plan, int startI, int startJ)
+        private List<(int i, int j)> FindRectangleCycle(double[][] plan, int startI, int startJ)
         {
-            int vertical = plan.Length;
-            int horizontal = plan[0].Length;
+            int rows = plan.Length;
+            int cols = plan[0].Length;
 
-            List<(int i, int j)> cycle = new List<(int i, int j)>();
-            cycle.Add((startI, startJ));
-
-            if (FindNextPoint(plan, cycle, startI, startJ, true, startI, startJ))
+            for (int i = 0; i < rows; i++)
             {
-                return cycle; 
+                if (i == startI) continue;
+
+                for (int j = 0; j < cols; j++)
+                {
+                    if (j == startJ) continue;
+
+                    if (plan[startI][j] != 0 && plan[i][startJ] != 0 && plan[i][j] != 0)
+                    {
+                        return new List<(int i, int j)>
+                        {
+                            (startI, startJ),
+                            (startI, j),
+                            (i, j),
+                            (i, startJ),
+                            (startI, startJ)
+                        };
+                    }
+                }
             }
 
             return new List<(int i, int j)>();
-        }
-
-        private bool FindNextPoint(double[][] plan, List<(int i, int j)> cycle, int currentI, int currentJ, bool isHorizontal, int startI, int startJ)
-        {
-            int vertical = plan.Length;
-            int horizontal = plan[0].Length;
-
-            if (isHorizontal)
-            {
-                // Ищем по горизонтали (строка currentI, ищем столбец)
-                for (int j = 0; j < horizontal; j++)
-                {
-                    if (j == currentJ) continue;
-
-                    // Проверяем, что клетка занята (есть груз) или это стартовая клетка
-                    bool isOccupied = (plan[currentI][j] != 0);
-                    bool isStart = (currentI == startI && j == startJ && cycle.Count >= 2);
-
-                    if (isOccupied || isStart)
-                    {
-                        // Проверяем, не вернулись ли мы в начало
-                        if (isStart)
-                        {
-                            // НЕ ДОБАВЛЯЕМ стартовую ячейку повторно
-                            return true;
-                        }
-
-                        // Проверяем, не посещали ли уже эту клетку
-                        bool alreadyVisited = false;
-                        foreach (var point in cycle)
-                        {
-                            if (point.i == currentI && point.j == j)
-                            {
-                                alreadyVisited = true;
-                                break;
-                            }
-                        }
-
-                        if (!alreadyVisited)
-                        {
-                            cycle.Add((currentI, j));
-                            if (FindNextPoint(plan, cycle, currentI, j, false, startI, startJ))
-                            {
-                                return true;
-                            }
-                            cycle.RemoveAt(cycle.Count - 1);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                // Ищем по вертикали (столбец currentJ, ищем строку)
-                for (int i = 0; i < vertical; i++)
-                {
-                    if (i == currentI) continue;
-
-                    // Проверяем, что клетка занята (есть груз) или это стартовая клетка
-                    bool isOccupied = (plan[i][currentJ] != 0);
-                    bool isStart = (i == startI && currentJ == startJ && cycle.Count >= 2);
-
-                    if (isOccupied || isStart)
-                    {
-                        // Проверяем, не вернулись ли мы в начало
-                        if (isStart)
-                        {
-                            // НЕ ДОБАВЛЯЕМ стартовую ячейку повторно
-                            return true;
-                        }
-
-                        // Проверяем, не посещали ли уже эту клетку
-                        bool alreadyVisited = false;
-                        foreach (var point in cycle)
-                        {
-                            if (point.i == i && point.j == currentJ)
-                            {
-                                alreadyVisited = true;
-                                break;
-                            }
-                        }
-
-                        if (!alreadyVisited)
-                        {
-                            cycle.Add((i, currentJ));
-                            if (FindNextPoint(plan, cycle, i, currentJ, true, startI, startJ))
-                            {
-                                return true;
-                            }
-                            cycle.RemoveAt(cycle.Count - 1);
-                        }
-                    }
-                }
-            }
-
-            return false;
         }
     }
 }

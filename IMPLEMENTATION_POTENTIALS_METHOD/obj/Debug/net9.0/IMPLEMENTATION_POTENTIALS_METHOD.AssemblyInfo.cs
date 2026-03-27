@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IMPLEMENTATION_POTENTIALS_METHOD")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1a54d08cd74f136a6ae94405e68e0f6f337da7e7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8ea4111bc1986202d205dd2839b947b84501f15b")]
 [assembly: System.Reflection.AssemblyProductAttribute("IMPLEMENTATION_POTENTIALS_METHOD")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IMPLEMENTATION_POTENTIALS_METHOD")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
