@@ -34,7 +34,7 @@ namespace IMPLEMENTATION_POTENTIALS_METHOD
                     matrix[i] = new double[arrayB.Length];
                     for (int j = 0; j < arrayB.Length; j++)
                     {
-                        Console.Write("Введите стоимость [" + (i + 1) + ";" + (j + 1) + "] : ");
+                        Console.Write("Введите значение [" + (i + 1) + ";" + (j + 1) + "] : ");
                         matrix[i][j] = Convert.ToDouble(Console.ReadLine());
                     }
                 }
