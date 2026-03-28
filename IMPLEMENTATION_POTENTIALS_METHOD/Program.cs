@@ -39,8 +39,8 @@ while (!optimal)
         string check = Console.ReadLine();
         if (check == "1")
         {
-            Console.WriteLine("Введите матрицу стоимости:");
-            Matrix = inputs.Input(ArrayA, ArrayB);
+            //Console.WriteLine("Введите матрицу стоимости:");
+            //Matrix = inputs.Input(ArrayA, ArrayB);
             Console.WriteLine("Введите составленный план:");
             plan = inputs.Input(ArrayA, ArrayB);
         }
